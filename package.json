@@ -1,0 +1,37 @@
+{
+  "scripts": {
+    "test": "ava",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "debug": "nodemon server.js --inspect",
+    "knex": "knex --knexfile config/knex.js"
+  },
+  "devDependencies": {
+    "ava": "^2.4.0"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "knex": "^0.20.2",
+    "mysql2": "^2.0.0",
+    "objection": "^1.6.11"
+  },
+  "name": "student-management",
+  "description": "",
+  "version": "1.0.0",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xpicer/student-management.git"
+  },
+  "keywords": [
+    "management",
+    "education"
+  ],
+  "author": "Damian Au",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xpicer/student-management/issues"
+  },
+  "homepage": "https://github.com/xpicer/student-management#readme"
+}
