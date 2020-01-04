@@ -34,7 +34,7 @@ class User extends Model {
 					to: 'users.id'
 				}
 			},
-			parent: {
+			parents: {
 				relation: Model.ManyToManyRelation,
 				modelClass: 'User',
 				join: {
@@ -49,12 +49,12 @@ class User extends Model {
 		}
 	}
 
-	async ofRole(role){
+	async Roles(role){
 		return await this.$relatedQuery('roles').where('name', role)
 	}
 
 	async hasRoles(role){
-		let rows = await this.ofRole(role)
+		let rows = await this.Roles(role)
 		if(rows.length > 0)
 			return true
 		else
@@ -69,21 +69,39 @@ class User extends Model {
 			 throw Error('RoleNotFoundException')
   }
 
-	async assignChildById(id){
-		let user, users
-		switch(typeof(id)){
-			case 'number': case 'string': {}
-				await this.$relatedQuery('children')
-					.relate(id)
-					// .where('id', id)
-				break
-			case 'object': 
-				await this.$relatedQuery('children')
-					.relate(id)
-					// .whereIn('id', id)
-				break
-		}
+  /* 
+	  User Hierarchy 
+	*/
+
+  	Parents(where){
+		let trx = this.$relatedQuery('parent')
+		return where ? trx.where(where) : trx
 	}
+
+  	async hasParents(where){
+		let rows = await this.Parents(where)
+		return rows.length > 0
+	  }
+	  
+	Children(where){
+		let trx = this.$relatedQuery('children')
+		return where ? trx.where(where) : trx
+	}
+
+  	async hasChildren(where){
+		let rows = await this.Children(where)
+		return rows.length > 0
+  	}
+
+	async assignChildById(id){
+		let child = await this.Children({'users.id': id}).first()
+		if(!child)
+			await this.$relatedQuery('children').relate(id)
+	}
+
+	/* 
+	  End User Hierarchy 
+	*/
 } 
 
 module.exports = User

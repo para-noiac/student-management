@@ -1,4 +1,7 @@
 'use strict'
+
+
+
 const express = require('express')
 const app = express();
 const router = require('./router')
@@ -8,7 +11,7 @@ const path = require('path')
 const Knex = require('knex')
 const config = require(path.join(appRoot, 'config/knex'))
 
-const knex = Knex(config[process.env.NODE_ENV || 'development'])
+const knex = Knex(config[process.env.NODE_ENV != 'production' ? 'development' : 'production'])
 const { Model } = require('objection')
 
 Model.knex(knex)

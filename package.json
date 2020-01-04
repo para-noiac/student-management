@@ -7,14 +7,16 @@
     "knex": "knex --knexfile config/knex.js"
   },
   "devDependencies": {
-    "ava": "^2.4.0"
+    "ava": "^2.4.0",
+    "got": "^10.2.0",
+    "test-listen": "^1.1.0"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "knex": "^0.20.2",
     "mysql2": "^2.0.0",
-    "objection": "^1.6.11"
+    "objection": "^2.0.0"
   },
   "name": "student-management",
   "description": "",
