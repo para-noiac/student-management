@@ -1,0 +1,27 @@
+const lo = require('lodash')
+exports.seed = async (knex) => {
+  let teacher_role = await knex.select('id').from('roles').where('name', 'teacher').then(rows => rows[0].id)
+  let student_role = await knex.select('id').from('roles').where('name', 'student').then(rows => rows[0].id)
+
+  let users_roles = []
+
+  await knex('users').del()
+  await knex('users_roles').del()
+  await knex('users_users').del()
+
+  // Setup for scenario 1
+  await knex('users').insert({email:'teacherken@example.com'}).then(async teachers => {
+    console.log({user_id: teachers[0], role_id:teacher_role })
+    await knex('users_roles').insert({user_id: teachers[0], role_id: teacher_role })
+    //workaround for mysql insert returns
+    for(let email of ['commonstudent1@gmail.com','commonstudent2@gmail.com','student_only_under_teacher_ken@gmail.com']){
+      let student = await knex('users').insert({email:email})
+      // students_ids.push(student[0])
+      await knex('users_users').insert({parent_id: teachers[0], child_id: student[0]})
+    }
+  })
+
+  
+
+  
+}

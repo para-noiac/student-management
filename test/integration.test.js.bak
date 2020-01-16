@@ -1,0 +1,88 @@
+const http = require('http');
+const test = require('ava');
+const got = require('got');
+const listen = require('test-listen');
+const app = require('../server');
+
+test('registration', async t => {
+	let client = t.context.client
+   const res = await client.post('api/register', { 
+		json:{
+			"teacher": "teacherken@gmail.com",
+			"students":
+			[
+				"studentjon@example.com",
+				"studenthon@example.com"
+			]
+		} 
+	})
+	console.log(res)
+	t.is(res.statusCode, 204)
+})
+
+test('common-students-1', async t => {
+	let client = t.context.client
+   const res = await client.get('api/commonstudents?teacher=teacherken@gmail.com')
+	t.is(res.statusCode, 200)
+	t.is(res.body, {
+		"students" : [
+			"commonstudent1@gmail.com", 
+			"commonstudent2@gmail.com",
+			"student_only_under_teacher_ken@gmail.com"
+		]
+	 })
+})
+
+test('common-students-2', async t => {
+	let client = t.context.client
+   const res = await client.get('api/commonstudents?teacher=teacherken%40example.com&teacher=teacherjoe%40example.com')
+	t.is(res.statusCode, 200)
+	t.is(res.body, {
+		"students" : [
+			"commonstudent1@gmail.com", 
+			"commonstudent2@gmail.com"
+		]
+	})
+})
+
+test('suspension', async t => {
+	let client = t.context.client
+   const res = await client.post('api/suspend', { 
+		json:{
+			"student": "studenthon@example.com"
+		} 
+	})
+	console.log(res)
+	t.is(res.statusCode, 204)
+})
+
+test('notification-retrieval', async t => {
+	let client = t.context.client
+   const res = await client.post('api/retrievefornotifications', { 
+		json:{
+			"teacher":  "teacherken@example.com",
+			"notification": "Hello students! @studentagnes@example.com @studentmiche@example.com @studenthon@example.com"
+		 }
+	})
+	t.is(res.statusCode, 200)
+	t.is(res.body, { 
+		"recipients":[
+			"studentbob@example.com",
+			"studentagnes@example.com", 
+			"studentmiche@example.com"
+		]   
+	})
+})
+
+test.before(async t => {
+	t.context.server = http.createServer(app)
+	let prefixUrl = await listen(t.context.server)
+	t.context.client = got.extend({
+		prefixUrl: prefixUrl,
+		responseType:'json'
+	})
+})
+
+test.after.always(t => {
+	t.context.server.close()
+})
